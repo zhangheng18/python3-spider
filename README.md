@@ -7,6 +7,7 @@
 
 ## 目录
 * [E小说下载器](https://github.com/xiaoTaoist/python3-spider/blob/master/seek_books.py)
+* [scrapy-proxy](https://github.com/xiaoTaoist/python3-spider/tree/master/proxy)
 
 
 ## 介绍
@@ -19,7 +20,7 @@
 * proxy:使用scrapy框架，对网上免费代理进行收集,验证，提取可用的http 代理
     * 第三方依赖：
         > pip install requests scrapy
-    * 爬取网站:
+    * 爬取的网站:
         * http://www.data5u.com
         * http://lab.crossincode.com
         * https://www.kuaidaili.com/
