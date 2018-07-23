@@ -16,5 +16,15 @@
     * 演示：
         ![seek_books](https://raw.githubusercontent.com/xiaoTaoist/python3-spider/master/demo_pic/seek_books.png)
     
-
+* proxy:使用scrapy框架，对网上免费代理进行收集,验证，提取可用的http 代理
+    * 第三方依赖：
+        > pip install requests scrapy
+    * 爬取网站:
+        * http://www.data5u.com
+        * http://lab.crossincode.com
+        * https://www.kuaidaili.com/
+        * http://spys.me/proxy.txt
+        * http://www.xicidaili.com/
+    * 使用: 抓取列表保存为ip.txt, 可用代理保存在ok_ip.txt
+        > python run.py
 
