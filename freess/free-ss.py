@@ -39,15 +39,13 @@ class freess(object):
             # 找到包含信息的tr
             trs = self.chrome.find_elements_by_xpath(
                 '//tr[@role="row" and @class="odd" or @class="even"] ')
-            # import ipdb
-            # ipdb.set_trace()
 
-            for tr in trs[1:]:
+            for tr in trs[4:]:
                 info = tr.text
                 if info != "":
                     ss = {}
                     li = info.split()
-
+                    #过滤不安全加密方式
                     if re.search(r'cfb|gcm|chacha', li[4]):
                         li[3], li[4] = li[4], li[3]
 
@@ -55,7 +53,6 @@ class freess(object):
                     ss["password"] = li[4]
                     ss["method"] = li[3]
                     ss["port"] = int(li[2])
-                    print(ss)
                     self.ss_data.append(ss)
             logging.info("共获得{}条ss...".format(len(self.ss_data)))
             self.save_v2js()
