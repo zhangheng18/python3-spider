@@ -3,7 +3,7 @@ import logging
 import json
 import re
 import random
-
+import time
 logging.basicConfig(level=logging.INFO)
 
 
@@ -31,13 +31,16 @@ class freess(object):
             #调整等待参数，加快网页加载速度
             self.chrome.set_script_timeout(1)
             self.chrome.set_page_load_timeout(6)
-            self.chrome.implicitly_wait(2)
+
             logging.info("正在加载 {}".format(self.url))
             self.chrome.get(self.url)
-
+            self.chrome.implicitly_wait(3)
+            time.sleep(1)
             # 找到包含信息的tr
             trs = self.chrome.find_elements_by_xpath(
                 '//tr[@role="row" and @class="odd" or @class="even"] ')
+            # import ipdb
+            # ipdb.set_trace()
 
             for tr in trs[1:]:
                 info = tr.text
@@ -45,11 +48,14 @@ class freess(object):
                     ss = {}
                     li = info.split()
 
+                    if re.search(r'cfb|gcm|chacha', li[4]):
+                        li[3], li[4] = li[4], li[3]
+
                     ss["address"] = li[1]
                     ss["password"] = li[4]
                     ss["method"] = li[3]
                     ss["port"] = int(li[2])
-
+                    print(ss)
                     self.ss_data.append(ss)
             logging.info("共获得{}条ss...".format(len(self.ss_data)))
             self.save_v2js()
@@ -63,15 +69,14 @@ class freess(object):
 
     def save_v2js(self):
         """
-        随机选择部分结果 保存为v2ray_ss.json 
+        随机选择部分结果 保存为v2ray_ss.json
         """
         try:
             with open('template_v2.json', 'r') as f:
                 conf_v2 = json.load(f)
-            d = random.sample(self.ss_data, 5)
+            d = random.sample(self.ss_data, 4)
             for ss in d:
-                if re.search(r'cfb|gcm|chacha', ss['method']):
-                    conf_v2['outbound']['settings']['servers'].append(ss)
+                conf_v2['outbound']['settings']['servers'].append(ss)
             logging.info("随机写入 {}条,生成配置 v2ray_ss.json".format(
                 len(conf_v2['outbound']['settings']['servers'])))
             with open('v2ray_ss.json', 'w') as f:
