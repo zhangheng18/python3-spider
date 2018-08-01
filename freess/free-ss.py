@@ -40,20 +40,26 @@ class freess(object):
             trs = self.chrome.find_elements_by_xpath(
                 '//tr[@role="row" and @class="odd" or @class="even"] ')
 
-            for tr in trs[4:]:
+            swap_flag = not int(time.strftime("%d")) % 2
+
+            for tr in trs[1:]:
                 info = tr.text
                 if info != "":
                     ss = {}
                     li = info.split()
-                    #过滤不安全加密方式
-                    if re.search(r'cfb|gcm|chacha', li[4]):
+
+                    if swap_flag:
                         li[3], li[4] = li[4], li[3]
 
                     ss["address"] = li[1]
                     ss["password"] = li[4]
                     ss["method"] = li[3]
                     ss["port"] = int(li[2])
-                    self.ss_data.append(ss)
+
+                    #过滤不安全加密方式
+                    if re.search(r'cfb|gcm|chacha', li[3]):
+                        self.ss_data.append(ss)
+
             logging.info("共获得{}条ss...".format(len(self.ss_data)))
             self.save_v2js()
         except Exception as e:
@@ -66,7 +72,7 @@ class freess(object):
 
     def save_v2js(self):
         """
-        随机选择部分结果 保存为v2ray_ss.json
+        随机选择4条结果 保存为v2ray_ss.json
         """
         try:
             with open('template_v2.json', 'r') as f:
