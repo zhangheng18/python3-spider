@@ -2,9 +2,9 @@ from selenium import webdriver
 import logging
 import json
 import re
-import random
 import time
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO, format='%(asctime)s :%(levelname)s : %(message)s')
 
 
 class freess(object):
@@ -12,7 +12,7 @@ class freess(object):
         """
         初始化 webdriver 实例
         """
-        self.url = "http://free-ss.cf"
+        self.url = "http://free-ss.tk"
         self.ss_data = []
         try:
             options = webdriver.ChromeOptions()
@@ -22,8 +22,7 @@ class freess(object):
             self.chrome = webdriver.Chrome(chrome_options=options)
             logging.info("初始化 chrome(headless) ... ")
         except Exception as e:
-            logging.debug(e)
-            logging.error("初始化 chrome 失败 ...")
+            logging.error("初始化 chrome 失败 ...", exc_info=True)
         self.get_data()
 
     def get_data(self):
@@ -59,12 +58,12 @@ class freess(object):
                     #过滤不安全加密方式
                     if re.search(r'cfb|gcm|chacha', li[3]):
                         self.ss_data.append(ss)
-
+            count = len(self.ss_data)
             logging.info("共获得{}条ss...".format(len(self.ss_data)))
-            self.save_v2js()
+            if count:
+                self.save_v2js()
         except Exception as e:
-            logging.error(e)
-            logging.error("网络异常，请稍后重试")
+            logging.error("网络异常，请稍后重试", exc_info=True)
 
         finally:
             self.chrome.close()
@@ -77,15 +76,15 @@ class freess(object):
         try:
             with open('template_v2.json', 'r') as f:
                 conf_v2 = json.load(f)
-            d = random.sample(self.ss_data, 4)
-            for ss in d:
+
+            for ss in self.ss_data[:4]:
                 conf_v2['outbound']['settings']['servers'].append(ss)
-            logging.info("随机写入 {}条,生成配置 v2ray_ss.json".format(
+            logging.info("写入 {}条,生成配置 v2ray_ss.json".format(
                 len(conf_v2['outbound']['settings']['servers'])))
             with open('v2ray_ss.json', 'w') as f:
                 json.dump(conf_v2, f, indent=4)
         except Exception as e:
-            logging.error(e)
+            logging.error("写入失败", exc_info=True)
 
 
 if __name__ == '__main__':
